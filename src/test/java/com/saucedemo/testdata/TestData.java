@@ -1,3 +1,51 @@
 package com.saucedemo.testdata;
-import com.fasterxml.jackson.databind.JsonNode; import com.fasterxml.jackson.databind.ObjectMapper; import java.io.InputStream;
-public final class TestData {private static final JsonNode DATA=load(); private TestData(){}public static String standardUser(){return DATA.at("/users/standard/username").asText();}public static String standardPassword(){return DATA.at("/users/standard/password").asText();}public static String invalidUser(){return DATA.at("/users/invalid/username").asText();}public static String invalidPassword(){return DATA.at("/users/invalid/password").asText();}public static String firstName(){return DATA.at("/checkout/firstName").asText();}public static String lastName(){return DATA.at("/checkout/lastName").asText();}public static String postalCode(){return DATA.at("/checkout/postalCode").asText();}private static JsonNode load(){try(InputStream input=TestData.class.getResourceAsStream("/testdata/test-data.json")){if(input==null)throw new IllegalStateException("Fixture not found");return new ObjectMapper().readTree(input);}catch(Exception exception){throw new IllegalStateException("Unable to load test data",exception);}}}
+
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import java.io.InputStream;
+
+public final class TestData {
+    private static final JsonNode DATA = load();
+
+    private TestData() {
+    }
+
+    public static String standardUser() {
+        return DATA.at("/users/standard/username").asText();
+    }
+
+    public static String standardPassword() {
+        return DATA.at("/users/standard/password").asText();
+    }
+
+    public static String invalidUser() {
+        return DATA.at("/users/invalid/username").asText();
+    }
+
+    public static String invalidPassword() {
+        return DATA.at("/users/invalid/password").asText();
+    }
+
+    public static String firstName() {
+        return DATA.at("/checkout/firstName").asText();
+    }
+
+    public static String lastName() {
+        return DATA.at("/checkout/lastName").asText();
+    }
+
+    public static String postalCode() {
+        return DATA.at("/checkout/postalCode").asText();
+    }
+
+    private static JsonNode load() {
+        try (InputStream input = TestData.class.getResourceAsStream("/testdata/test-data.json")) {
+            if (input == null) {
+                throw new IllegalStateException("Fixture not found");
+            }
+            return new ObjectMapper().readTree(input);
+        } catch (Exception exception) {
+            throw new IllegalStateException("Unable to load test data", exception);
+        }
+    }
+}

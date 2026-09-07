@@ -5,17 +5,19 @@ A small, maintainable Java 21 UI automation framework for [SauceDemo](https://ww
 ## Project layout
 
 ```
+src/main/java/com/saucedemo/
+  config/       runtime configuration
+  pages/        reusable page objects: locators and page actions only
+  support/      reusable driver, wait, and database utilities
 src/test/java/com/saucedemo/
-  config/       environment configuration
-  pages/        locators and page actions only
   runner/       JUnit Platform Cucumber runner
   steps/        Gherkin bindings; no selectors
-  support/      driver factory, hooks, waits, database client
+  support/      Cucumber lifecycle hooks
   testdata/     fixture loader
 src/test/resources/
   features/     Gherkin scenarios only
   testdata/     JSON fixtures
-config/         .env.example documents configuration
+config/         environment-variable documentation
 ```
 
 ## Setup and execution
@@ -28,7 +30,7 @@ mvn test -Dcucumber.filter.tags="@smoke"
 mvn test -Dbrowser=firefox -Dheadless=false
 ```
 
-Configuration may be supplied as JVM properties (shown above) or environment variables. See [`config/.env.example`](config/.env.example). The defaults are `chrome`, headless mode, a 10-second explicit wait, and `https://www.saucedemo.com/`. Reports are written to `target/cucumber-report.html` and `target/cucumber-report.json`.
+Configuration may be supplied as JVM properties (shown above) or environment variables. See [`config/.env.example`](config/.env.example). The defaults are `chrome`, headless mode, a 10-second explicit wait, and `https://www.saucedemo.com/`. Reports are written to `target/cucumber-report.html`.
 
 ## Locator Strategy for Adding “Sauce Labs Backpack”
 
@@ -38,7 +40,7 @@ Configuration may be supplied as JVM properties (shown above) or environment var
 
 ## Engineering decisions
 
-1. **Structure:** Gherkin documents behavior; thin step definitions orchestrate page methods; pages own selectors and UI actions. Support code centralizes cross-cutting concerns, so adding scenarios does not duplicate browser or wait logic.
+1. **Structure:** Reusable automation framework code lives in `src/main`; executable test specifications live in `src/test`. Gherkin documents behavior, thin step definitions orchestrate page methods, and pages own selectors and UI actions. This separation keeps test behavior isolated while allowing framework components to be reused.
 2. **Wait strategy:** implicit waits are explicitly disabled. Each interaction waits for the relevant condition (visible or clickable) with `WebDriverWait`; no `Thread.sleep` is used. This synchronizes against application state instead of guessed timing.
 3. **Stable locators:** centralized `data-test` locators are resilient to visual redesigns and simple to update in one place.
 4. **Scaling to 50+ scenarios:** keep pages domain-focused, use fixture builders/JSON per test domain, introduce tags by risk and feature, use scenario outlines for variations, and run isolated drivers in parallel after ensuring data isolation.

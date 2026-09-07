@@ -1,0 +1,32 @@
+package com.saucedemo.pages;
+
+import com.saucedemo.config.TestConfig;
+import com.saucedemo.support.DriverFactory;
+import com.saucedemo.support.Waits;
+import org.openqa.selenium.By;
+
+public class LoginPage {
+    private static final By USERNAME = By.id("user-name");
+    private static final By PASSWORD = By.id("password");
+    private static final By LOGIN = By.id("login-button");
+    private static final By ERROR = By.cssSelector("[data-test='error']");
+
+    public void open() {
+        DriverFactory.getDriver().get(TestConfig.baseUrl());
+        Waits.visible(LOGIN);
+    }
+
+    public void login(String username, String password) {
+        Waits.visible(USERNAME).sendKeys(username);
+        DriverFactory.getDriver().findElement(PASSWORD).sendKeys(password);
+        Waits.clickable(LOGIN).click();
+    }
+
+    public String errorMessage() {
+        return Waits.visible(ERROR).getText();
+    }
+
+    public boolean isDisplayed() {
+        return Waits.visible(LOGIN).isDisplayed();
+    }
+}
