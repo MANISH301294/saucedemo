@@ -14,7 +14,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <cucumber.version>7.20.1</cucumber.version>
         <cucumber.filter.tags>@smoke</cucumber.filter.tags>
-        <selenium.version>4.27.0</selenium.version>
+        <selenium.version>4.50.0</selenium.version>
         <jackson.version>2.18.2</jackson.version>
     </properties>
 

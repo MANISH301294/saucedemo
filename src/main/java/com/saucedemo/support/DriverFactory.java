@@ -15,7 +15,8 @@ public final class DriverFactory {
     }
 
     public static void start() {
-        WebDriver driver = switch (TestConfig.browser().toLowerCase()) {
+        WebDriver driver =
+                switch (TestConfig.browser().toLowerCase()) {
             case "firefox" -> new FirefoxDriver(firefoxOptions());
             case "chrome" -> new ChromeDriver(chromeOptions());
             default -> throw new IllegalArgumentException(

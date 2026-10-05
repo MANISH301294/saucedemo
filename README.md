@@ -51,17 +51,26 @@ Configuration may be supplied as JVM properties (shown above) or environment var
 
 `DatabaseClient` supplies a config-driven, parameterized JDBC query method, error propagation with the original SQL exception as cause, and `AutoCloseable` teardown. It is not invoked against public SauceDemo because no database access is available.
 
-Example UI-to-database validation pseudocode:
+Example UI-to-database validation pseudocode (the bounded retry is intentional: an order record may be eventually consistent):
 
 ```java
 String correlationId = UUID.randomUUID().toString();
 // Submit checkout with correlationId injected via a test-only API/header or fixture.
-await().atMost(20, SECONDS).pollInterval(500, MILLISECONDS).untilAsserted(() -> {
+Instant deadline = Instant.now().plusSeconds(20);
+AssertionError lastFailure = null;
+
+while (Instant.now().isBefore(deadline)) {
   try (DatabaseClient db = new DatabaseClient()) {
     var rows = db.query("SELECT status, total FROM orders WHERE external_reference = ?", List.of(correlationId));
     assertEquals("COMPLETED", rows.getFirst().get("status"));
+    lastFailure = null;
+    break;
+  } catch (AssertionError failure) {
+    lastFailure = failure;
+    Thread.sleep(500); // bounded polling for eventual consistency only
   }
-});
+}
+if (lastFailure != null) throw lastFailure;
 // finally: DELETE FROM orders WHERE external_reference = ? (or call test-only cleanup API)
 ```
 
@@ -73,4 +82,13 @@ Record a 5–8-minute walkthrough: (1) project architecture and folder responsib
 
 ## AI usage disclosure
 
-AI assistance was used to scaffold the initial project, test structure, and documentation from the supplied assignment brief. Review, understand, adapt, and execute the code yourself before submitting—especially the locator and wait decisions—so you can explain and modify it during the technical discussion.
+AI assistance was used only for documentation clarity, README formatting, and general code-cleanliness review. The framework structure, Page Objects, step definitions, feature files, configuration, test data, driver/wait implementation, database utility, and CI workflow were implemented and reviewed by me.
+
+I used the review feedback to improve wording in the README, add the assumptions section requested by the assignment, and clarify the database-validation pseudocode. These documentation changes make the project easier to understand without changing the intended automation design. I understand the implementation and can explain or modify the locator, assertions, wait strategy, and framework structure during the technical discussion.
+
+## Assumptions
+
+1. SauceDemo remains publicly available and its documented `standard_user` / `secret_sauce` credentials continue to be valid for this exercise.
+2. Tests run against a disposable public demo environment, so the UI flow validates order confirmation only; it does not create a real payment or persistent order record that can be queried.
+3. Chrome or Firefox is installed locally. Selenium Manager resolves the matching browser driver.
+4. Any future database-enabled environment supplies `DB_URL`, `DB_USER`, and `DB_PASSWORD` through local environment variables or CI secrets; credentials and connection strings are never committed.

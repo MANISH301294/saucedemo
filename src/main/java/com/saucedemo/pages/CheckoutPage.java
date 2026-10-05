@@ -25,4 +25,5 @@ public class CheckoutPage {
     public boolean isComplete() {
         return Waits.visible(COMPLETE_HEADER).getText().equals("Thank you for your order!");
     }
+
 }
