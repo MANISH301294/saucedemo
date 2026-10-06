@@ -28,9 +28,16 @@ Prerequisites: Java 21+, Maven 3.9+, and locally installed Chrome or Firefox. Se
 mvn test
 mvn test -Dcucumber.filter.tags="@smoke"
 mvn test -Dbrowser=firefox -Dheadless=false
+mvn test -DrerunFailingTestsCount=0
 ```
 
 Configuration may be supplied as JVM properties (shown above) or environment variables. See [`config/.env.example`](config/.env.example). The defaults are `chrome`, headless mode, a 10-second explicit wait, and `https://www.saucedemo.com/`. Reports are written to `target/cucumber-report.html`.
+
+## Retry policy
+
+Maven Surefire reruns a failed test class once (`rerunFailingTestsCount=1`) to reduce the impact of transient browser or public-demo outages. A persistent failure still fails the build, and Surefire records the rerun outcome in its test reports. Set `-DrerunFailingTestsCount=0` when diagnosing a failure without a retry. This is intentionally limited to one rerun so genuine defects are not hidden.
+
+The retry policy applies when tests run through Maven (`mvn test`) or CI. Running `CucumberTest` directly from an IDE bypasses Maven Surefire, so it does not retry; use the IDE's Maven `test` goal when a local retry is needed.
 
 ## Locator Strategy for Adding “Sauce Labs Backpack”
 
