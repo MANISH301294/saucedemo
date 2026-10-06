@@ -84,7 +84,8 @@ if (lastFailure != null) throw lastFailure;
 The correlation ID isolates each execution; parameter binding prevents query injection; bounded polling handles eventual consistency; `finally` cleanup removes data. In a shared environment, use a unique per-run namespace and never delete broad production-like data.
 
 ## Video walkthrough outline
-
+Video link
+https://drive.google.com/file/d/1VglvPizKqDs25x2lrrc1CnCESRSFz7DG/view?usp=sharing
 Record a 5–8-minute walkthrough: (1) project architecture and folder responsibilities, (2) Gherkin-to-step-to-page flow, (3) the stable Backpack locator and fallback, (4) config, driver, hooks, waits, screenshots, and DB utility, then (5) run `mvn test` and open the generated report. This repository intentionally does not contain a recording; add your own video link/file before submission.
 
 ## AI usage disclosure
